@@ -96,19 +96,19 @@
 
 
 
-  <meta name="description" content="在做网页的时候可能会遇到需要上传图片来修改头像或者其他资料的问题。 本篇博客用来解决上传图片中遇到的一些问题 1.上传本人用的是vue框架 首先通过type123```&amp;lt;img :src =&amp;quot;HeadUrl&amp;quot;&amp;gt;&amp;lt;input type=&amp;quot;file&amp;quot; style=&amp;quot;display: none&amp;quot; accept=&amp;quot;im">
-<meta name="keywords" content="前端,图片上传,canvas,base64">
+  <meta name="description" content="在做网页的时候可能会遇到需要上传图片来修改头像或者其他资料的问题。 本篇博客用来解决上传图片中遇到的一些问题 1.上传本人用的是vue框架 首先通过type123```javascript&amp;lt;img :src =&amp;quot;HeadUrl&amp;quot;&amp;gt;&amp;lt;input type=&amp;quot;file&amp;quot; style=&amp;quot;display: none&amp;quot; accep">
+<meta name="keywords" content="图片上传,canvas,base64,前端">
 <meta property="og:type" content="article">
 <meta property="og:title" content="前端图片上传，图片预览及过大 压缩处理 canvas+base64">
 <meta property="og:url" content="http://yoursite.com/2018/08/02/uploadImg/index.html">
 <meta property="og:site_name" content="Brewing">
-<meta property="og:description" content="在做网页的时候可能会遇到需要上传图片来修改头像或者其他资料的问题。 本篇博客用来解决上传图片中遇到的一些问题 1.上传本人用的是vue框架 首先通过type123```&amp;lt;img :src =&amp;quot;HeadUrl&amp;quot;&amp;gt;&amp;lt;input type=&amp;quot;file&amp;quot; style=&amp;quot;display: none&amp;quot; accept=&amp;quot;im">
+<meta property="og:description" content="在做网页的时候可能会遇到需要上传图片来修改头像或者其他资料的问题。 本篇博客用来解决上传图片中遇到的一些问题 1.上传本人用的是vue框架 首先通过type123```javascript&amp;lt;img :src =&amp;quot;HeadUrl&amp;quot;&amp;gt;&amp;lt;input type=&amp;quot;file&amp;quot; style=&amp;quot;display: none&amp;quot; accep">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://img-blog.csdn.net/20180802095702809?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3MTEwNDY5/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
-<meta property="og:updated_time" content="2019-04-08T07:42:15.690Z">
+<meta property="og:updated_time" content="2019-04-19T02:44:24.444Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="前端图片上传，图片预览及过大 压缩处理 canvas+base64">
-<meta name="twitter:description" content="在做网页的时候可能会遇到需要上传图片来修改头像或者其他资料的问题。 本篇博客用来解决上传图片中遇到的一些问题 1.上传本人用的是vue框架 首先通过type123```&amp;lt;img :src =&amp;quot;HeadUrl&amp;quot;&amp;gt;&amp;lt;input type=&amp;quot;file&amp;quot; style=&amp;quot;display: none&amp;quot; accept=&amp;quot;im">
+<meta name="twitter:description" content="在做网页的时候可能会遇到需要上传图片来修改头像或者其他资料的问题。 本篇博客用来解决上传图片中遇到的一些问题 1.上传本人用的是vue框架 首先通过type123```javascript&amp;lt;img :src =&amp;quot;HeadUrl&amp;quot;&amp;gt;&amp;lt;input type=&amp;quot;file&amp;quot; style=&amp;quot;display: none&amp;quot; accep">
 <meta name="twitter:image" content="https://img-blog.csdn.net/20180802095702809?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3MTEwNDY5/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
 
 
@@ -408,11 +408,29 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-04-08 15:42:15" itemprop="dateModified" datetime="2019-04-08T15:42:15+08:00">2019-04-08</time>
+                <time title="修改时间：2019-04-19 10:44:24" itemprop="dateModified" datetime="2019-04-19T10:44:24+08:00">2019-04-19</time>
               
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/项目踩坑/" itemprop="url" rel="index"><span itemprop="name">项目踩坑</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -445,17 +463,17 @@
         <p>在做网页的时候可能会遇到需要上传图片来修改头像或者其他资料的问题。</p>
 <p>本篇博客用来解决上传图片中遇到的一些问题</p>
 <h3 id="1-上传"><a href="#1-上传" class="headerlink" title="1.上传"></a>1.上传</h3><p>本人用的是vue框架</p>
-<p>首先通过<figure class="highlight plain"><figcaption><span>type</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">```</span><br><span class="line">&lt;img :src =&quot;HeadUrl&quot;&gt;</span><br><span class="line">&lt;input type=&quot;file&quot; style=&quot;display: none&quot; accept=&quot;image/*&quot; @change=&quot;select_img&quot; &gt;</span><br></pre></td></tr></table></figure></p>
+<p>首先通过<figure class="highlight plain"><figcaption><span>type</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">```javascript</span><br><span class="line">&lt;img :src =&quot;HeadUrl&quot;&gt;</span><br><span class="line">&lt;input type=&quot;file&quot; style=&quot;display: none&quot; accept=&quot;image/*&quot; @change=&quot;select_img&quot; &gt;</span><br></pre></td></tr></table></figure></p>
 <p>调用change事件，当选择文件改变的时候触发select_img事件</p>
-<p>通过readAsDataURL()来进行图片预览，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">select_img: function (e) &#123;//当input file值改变时触发的事件</span><br><span class="line">      var vm = this;</span><br><span class="line">      this.file = event.target.files[0];</span><br><span class="line">      const reader = new FileReader();//图片预览</span><br><span class="line">      reader.readAsDataURL(this.file);</span><br><span class="line">      reader.onload = (e) =&gt; &#123;</span><br><span class="line">          const src = e.target.result;</span><br><span class="line">          vm.HeadUrl = src;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过readAsDataURL()来进行图片预览，<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">select_img: <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;<span class="comment">//当input file值改变时触发的事件</span></span><br><span class="line">      <span class="keyword">var</span> vm = <span class="keyword">this</span>;</span><br><span class="line">      <span class="keyword">this</span>.file = event.target.files[<span class="number">0</span>];</span><br><span class="line">      <span class="keyword">const</span> reader = <span class="keyword">new</span> FileReader();<span class="comment">//图片预览</span></span><br><span class="line">      reader.readAsDataURL(<span class="keyword">this</span>.file);</span><br><span class="line">      reader.onload = <span class="function">(<span class="params">e</span>) =&gt;</span> &#123;</span><br><span class="line">          <span class="keyword">const</span> src = e.target.result;</span><br><span class="line">          vm.HeadUrl = src;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
 <p>FileReader对象的readAsDataURL方法可以将读取到的文件编码成Data URL。Data URL是一项特殊的技术，可以将资料(例如图片)内嵌在网页之中，不用放到外部文件。使用Data URL的好处是，您不需要额外再发出一个HTTP 请求到服务器端取得额外的资料；而缺点便是，网页的大小可能会变大。它适合应用在内嵌小图片，不建议将大图像文件编码成Data URL来使用。</p>
 <p>到这里应该就完成预览图片的功能</p>
-<h3 id="2-图片太大压缩处理"><a href="#2-图片太大压缩处理" class="headerlink" title="2.图片太大压缩处理"></a>2.图片太大压缩处理</h3><p>一般来说上传的图片不能过大，否则会使服务器负载较大，所以我们需要获取指定文件的大小来判断<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">select_img: function (e) &#123;//当input file值改变时触发的事件</span><br><span class="line">      var vm = this;</span><br><span class="line"></span><br><span class="line">      var img_size = event.target.files[0].size; //用来判断大小</span><br><span class="line"></span><br><span class="line">      this.file = event.target.files[0];</span><br><span class="line"></span><br><span class="line">      vm.filename = this.file.name;</span><br><span class="line">      const reader = new FileReader();//图片预览</span><br><span class="line">      reader.readAsDataURL(this.file);</span><br><span class="line">      reader.onload = (e) =&gt; &#123;</span><br><span class="line">        if (img_size &gt;= 1024 * 1024 * 0.5) &#123; //意思是大于0.5m 就进行处理</span><br><span class="line">          console.log(&quot;图片太大&quot;)</span><br><span class="line">          vm.compressImage(e.target.result);//调用自定义方法来处理图片</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">          const src = e.target.result;</span><br><span class="line">          vm.HeadUrl = src;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
-<p>到这里我们如果图片太大 会进行自定义方法compressImage来压缩<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">compressImage: function (bdata) &#123;//压缩图片</span><br><span class="line">      var _this = this;</span><br><span class="line">      var quality = 0.3; //压缩图片的质量</span><br><span class="line">      var oldimglength = bdata.length;//压缩前的大小</span><br><span class="line">      var compresRadio = 0;// 压缩率</span><br><span class="line"></span><br><span class="line">      var canvas = document.createElement(&quot;canvas&quot;); //创建画布</span><br><span class="line">      var ctx = canvas.getContext(&quot;2d&quot;);</span><br><span class="line"></span><br><span class="line">      var img = new Image();</span><br><span class="line">      img.src = bdata;</span><br><span class="line">      img.onload = function()&#123;</span><br><span class="line">        var width = img.width;</span><br><span class="line">        var height = img.height;</span><br><span class="line">        canvas.width = 100;   //这里可以自定义你的图片大小</span><br><span class="line">        canvas.height = 100 * (img.height / img.width);</span><br><span class="line">        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);</span><br><span class="line">        var cdata = canvas.toDataURL(&quot;image/jpeg&quot;,quality);  //将图片转为Base64 之后预览要用</span><br><span class="line"></span><br><span class="line">        _this.HeadUrl = cdata; //预览你压缩后的图片</span><br><span class="line">        var newimglength = cdata.length;</span><br><span class="line">        console.log(&quot;img-blob:&quot;+oldimglength)//压缩前大小</span><br><span class="line">        console.log(&quot;ctx-blob:&quot;+newimglength) //压缩后大小</span><br><span class="line">        compresRadio = (((oldimglength-newimglength)/oldimglength*100).toFixed(2))+&apos;%&apos;;</span><br><span class="line">        console.log(&quot;压缩率:&quot;+compresRadio)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="2-图片太大压缩处理"><a href="#2-图片太大压缩处理" class="headerlink" title="2.图片太大压缩处理"></a>2.图片太大压缩处理</h3><p>一般来说上传的图片不能过大，否则会使服务器负载较大，所以我们需要获取指定文件的大小来判断<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">select_img: <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;<span class="comment">//当input file值改变时触发的事件</span></span><br><span class="line">      <span class="keyword">var</span> vm = <span class="keyword">this</span>;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">var</span> img_size = event.target.files[<span class="number">0</span>].size; <span class="comment">//用来判断大小</span></span><br><span class="line"></span><br><span class="line">      <span class="keyword">this</span>.file = event.target.files[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">      vm.filename = <span class="keyword">this</span>.file.name;</span><br><span class="line">      <span class="keyword">const</span> reader = <span class="keyword">new</span> FileReader();<span class="comment">//图片预览</span></span><br><span class="line">      reader.readAsDataURL(<span class="keyword">this</span>.file);</span><br><span class="line">      reader.onload = <span class="function">(<span class="params">e</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (img_size &gt;= <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">0.5</span>) &#123; <span class="comment">//意思是大于0.5m 就进行处理</span></span><br><span class="line">          <span class="built_in">console</span>.log(<span class="string">"图片太大"</span>)</span><br><span class="line">          vm.compressImage(e.target.result);<span class="comment">//调用自定义方法来处理图片</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">          <span class="keyword">const</span> src = e.target.result;</span><br><span class="line">          vm.HeadUrl = src;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>到这里我们如果图片太大 会进行自定义方法compressImage来压缩<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">compressImage: <span class="function"><span class="keyword">function</span> (<span class="params">bdata</span>) </span>&#123;<span class="comment">//压缩图片</span></span><br><span class="line">      <span class="keyword">var</span> _this = <span class="keyword">this</span>;</span><br><span class="line">      <span class="keyword">var</span> quality = <span class="number">0.3</span>; <span class="comment">//压缩图片的质量</span></span><br><span class="line">      <span class="keyword">var</span> oldimglength = bdata.length;<span class="comment">//压缩前的大小</span></span><br><span class="line">      <span class="keyword">var</span> compresRadio = <span class="number">0</span>;<span class="comment">// 压缩率</span></span><br><span class="line"></span><br><span class="line">      <span class="keyword">var</span> canvas = <span class="built_in">document</span>.createElement(<span class="string">"canvas"</span>); <span class="comment">//创建画布</span></span><br><span class="line">      <span class="keyword">var</span> ctx = canvas.getContext(<span class="string">"2d"</span>);</span><br><span class="line"></span><br><span class="line">      <span class="keyword">var</span> img = <span class="keyword">new</span> Image();</span><br><span class="line">      img.src = bdata;</span><br><span class="line">      img.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">var</span> width = img.width;</span><br><span class="line">        <span class="keyword">var</span> height = img.height;</span><br><span class="line">        canvas.width = <span class="number">100</span>;   <span class="comment">//这里可以自定义你的图片大小</span></span><br><span class="line">        canvas.height = <span class="number">100</span> * (img.height / img.width);</span><br><span class="line">        ctx.drawImage(img, <span class="number">0</span>, <span class="number">0</span>, canvas.width, canvas.height);</span><br><span class="line">        <span class="keyword">var</span> cdata = canvas.toDataURL(<span class="string">"image/jpeg"</span>,quality);  <span class="comment">//将图片转为Base64 之后预览要用</span></span><br><span class="line"></span><br><span class="line">        _this.HeadUrl = cdata; <span class="comment">//预览你压缩后的图片</span></span><br><span class="line">        <span class="keyword">var</span> newimglength = cdata.length;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">"img-blob:"</span>+oldimglength)<span class="comment">//压缩前大小</span></span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">"ctx-blob:"</span>+newimglength) <span class="comment">//压缩后大小</span></span><br><span class="line">        compresRadio = (((oldimglength-newimglength)/oldimglength*<span class="number">100</span>).toFixed(<span class="number">2</span>))+<span class="string">'%'</span>;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">"压缩率:"</span>+compresRadio)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
 <p>这样一来你的img HeadUrl 就是压缩后的图片大小了</p>
 <p>  2.1 base64转成file类型<br> 因为公司后台接口的问题，我们并不是通过传base64和后台对接，而是指定一个file类型文件，如下</p>
 <p><img src="https://img-blog.csdn.net/20180802095702809?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3MTEwNDY5/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="在这里插入图片描述"></p>
-<p>所以我还需要进行base64转成file类型处理- -<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">var arr = cdata.split(&apos;,&apos;);</span><br><span class="line">var mime = arr[0].match(/:(.*?);/)[1];</span><br><span class="line">var bstr = atob(arr[1]);</span><br><span class="line">var n = bstr.length;</span><br><span class="line">var u8arr = new Uint8Array(n);</span><br><span class="line">while(n--)&#123;</span><br><span class="line">  u8arr[n] = bstr.charCodeAt(n);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>所以我还需要进行base64转成file类型处理- -<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = cdata.split(<span class="string">','</span>);</span><br><span class="line"><span class="keyword">var</span> mime = arr[<span class="number">0</span>].match(<span class="regexp">/:(.*?);/</span>)[<span class="number">1</span>];</span><br><span class="line"><span class="keyword">var</span> bstr = atob(arr[<span class="number">1</span>]);</span><br><span class="line"><span class="keyword">var</span> n = bstr.length;</span><br><span class="line"><span class="keyword">var</span> u8arr = <span class="keyword">new</span> <span class="built_in">Uint8Array</span>(n);</span><br><span class="line"><span class="keyword">while</span>(n--)&#123;</span><br><span class="line">  u8arr[n] = bstr.charCodeAt(n);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <pre><code>_this.newFile =new File([u8arr],_this.filename, {type:mime});
 </code></pre><p>new File()具体参数可以参考:<a href="https://blog.csdn.net/commandboy/article/details/55680654" target="_blank" rel="noopener">https://blog.csdn.net/commandboy/article/details/55680654</a></p>
 <p>原理:readAsDataURL方法会使用base-64进行编码，编码的资料由data字串开始，后面跟随的是MIME type，然后再加上base64字串，逗号之后就是编码过的图像文件的内容。</p>
@@ -483,13 +501,13 @@
       
         <div class="post-tags">
           
-            <a href="/tags/前端/" rel="tag"># 前端</a>
-          
             <a href="/tags/图片上传/" rel="tag"># 图片上传</a>
           
             <a href="/tags/canvas/" rel="tag"># canvas</a>
           
             <a href="/tags/base64/" rel="tag"># base64</a>
+          
+            <a href="/tags/前端/" rel="tag"># 前端</a>
           
         </div>
       
@@ -584,7 +602,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-count">7</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -607,7 +625,13 @@
                     
                       
                     
-                    <span class="site-state-item-count">3</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -644,7 +668,15 @@
                     
                       
                     
-                    <span class="site-state-item-count">10</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">14</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
