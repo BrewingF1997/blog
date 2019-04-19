@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.0.1',
+    sidebar: {"position":"left","display":"always","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="单机环境中的zookeeper应用 最近在做项目的时候，发现两个不同端口的服务器，公用一个数据库，并且tomcat配置的虚拟路径，与文件读写的路径不同，为了保证两个本地文件同步，于是我想了使用zookeeper 来管理这些文件，这样在一个端口上传服务器，另一个端口可以看到zookeeper创建的节点，也一起创建文件，实现同步管理。 1.什么是zookeeper ZooKeeper是一个分布式的，开">
+<meta name="keywords" content="zookeeper">
+<meta property="og:type" content="article">
+<meta property="og:title" content="zookeeper配置使用">
+<meta property="og:url" content="http://yoursite.com/2019/04/19/java-zookeeper/index.html">
+<meta property="og:site_name" content="Brewing">
+<meta property="og:description" content="单机环境中的zookeeper应用 最近在做项目的时候，发现两个不同端口的服务器，公用一个数据库，并且tomcat配置的虚拟路径，与文件读写的路径不同，为了保证两个本地文件同步，于是我想了使用zookeeper 来管理这些文件，这样在一个端口上传服务器，另一个端口可以看到zookeeper创建的节点，也一起创建文件，实现同步管理。 1.什么是zookeeper ZooKeeper是一个分布式的，开">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/java-zookeeper/zookeeper.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/04/19/java-zookeeper/节点树创建.png">
+<meta property="og:updated_time" content="2019-04-19T06:45:59.055Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="zookeeper配置使用">
+<meta name="twitter:description" content="单机环境中的zookeeper应用 最近在做项目的时候，发现两个不同端口的服务器，公用一个数据库，并且tomcat配置的虚拟路径，与文件读写的路径不同，为了保证两个本地文件同步，于是我想了使用zookeeper 来管理这些文件，这样在一个端口上传服务器，另一个端口可以看到zookeeper创建的节点，也一起创建文件，实现同步管理。 1.什么是zookeeper ZooKeeper是一个分布式的，开">
+<meta name="twitter:image" content="http://yoursite.com/2019/04/19/java-zookeeper/zookeeper.jpg">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/19/java-zookeeper/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>zookeeper配置使用 | Brewing</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband">
+    <a href="https://BrewingF1997.github.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    </div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Brewing</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">个人博客</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/19/java-zookeeper/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zl">
+      <meta itemprop="description" content="近几年的一些学习与生活记录">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Brewing">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">zookeeper配置使用
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-19 14:26:43 / 修改时间：14:45:59" itemprop="dateCreated datePublished" datetime="2019-04-19T14:26:43+08:00">2019-04-19</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Spring-boot/" itemprop="url" rel="index"><span itemprop="name">Spring boot</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Spring-boot/zookeeper/" itemprop="url" rel="index"><span itemprop="name">zookeeper</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>单机环境中的zookeeper应用</p>
+<p>最近在做项目的时候，发现两个不同端口的服务器，公用一个数据库，并且tomcat配置的虚拟路径，与文件读写的路径不同，为了保证两个本地文件同步，于是我想了使用zookeeper 来管理这些文件，这样在一个端口上传服务器，另一个端口可以看到zookeeper创建的节点，也一起创建文件，实现同步管理。</p>
+<h1 id="1-什么是zookeeper"><a href="#1-什么是zookeeper" class="headerlink" title="1.什么是zookeeper"></a>1.什么是zookeeper</h1><p> ZooKeeper是一个分布式的，开放源码的分布式应用程序协调服务，是Google的Chubby一个开源的实现，是Hadoop和Hbase的重要组件。它是一个为分布式应用提供一致性服务的软件，提供的功能包括：配置维护、域名服务、分布式同步、组服务等。 </p>
+<p> (注:来自百度百科)</p>
+<p> <img src="/2019/04/19/java-zookeeper/zookeeper.jpg" alt="image"></p>
+<h1 id="2-pom-xml文件配置"><a href="#2-pom-xml文件配置" class="headerlink" title="2.pom.xml文件配置"></a>2.pom.xml文件配置</h1> <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">&lt;!-- zookeeper --&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">zookeeper.version</span>&gt;</span>3.4.12<span class="tag">&lt;/<span class="name">zookeeper.version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">curator.version</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">curator.version</span>&gt;</span></span><br><span class="line"></span><br><span class="line">			<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.zookeeper<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>zookeeper<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;zookeeper.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">			</span><br><span class="line">			<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>curator-framework<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;curator.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">			<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>curator-recipes<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;curator.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h1 id="3-ssm中-使用xml进行zookeeper-配置"><a href="#3-ssm中-使用xml进行zookeeper-配置" class="headerlink" title="3.ssm中 使用xml进行zookeeper 配置"></a>3.ssm中 使用xml进行zookeeper 配置</h1> <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"> <span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:context</span>=<span class="string">"http://www.springframework.org/schema/context"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:aop</span>=<span class="string">"http://www.springframework.org/schema/aop"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:tx</span>=<span class="string">"http://www.springframework.org/schema/tx"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:util</span>=<span class="string">"http://www.springframework.org/schema/util"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xsi:schemaLocation</span>=<span class="string">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd"</span>&gt;</span></span><br><span class="line">		</span><br><span class="line">	<span class="tag">&lt;<span class="name">description</span>&gt;</span>zookeeper 放入spring容器，项目启动加载的时候就建立和zk的连接<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">&lt;!-- 创建重连策略 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"retryPolicy"</span> <span class="attr">class</span>=<span class="string">"org.apache.curator.retry.ExponentialBackoffRetry"</span>&gt;</span></span><br><span class="line">		<span class="comment">&lt;!-- 每次重试连接的等待时间 --&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">constructor-arg</span> <span class="attr">index</span>=<span class="string">"0"</span> <span class="attr">value</span>=<span class="string">"1000"</span>&gt;</span><span class="tag">&lt;/<span class="name">constructor-arg</span>&gt;</span></span><br><span class="line">		<span class="comment">&lt;!-- 设置的重连的次数 --&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">constructor-arg</span> <span class="attr">index</span>=<span class="string">"1"</span> <span class="attr">value</span>=<span class="string">"5"</span>&gt;</span><span class="tag">&lt;/<span class="name">constructor-arg</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">&lt;!-- 创建zookeeper客户端 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"client"</span> <span class="attr">class</span>=<span class="string">"org.apache.curator.framework.CuratorFrameworkFactory"</span> </span></span><br><span class="line"><span class="tag">		<span class="attr">factory-method</span>=<span class="string">"newClient"</span> <span class="attr">init-method</span>=<span class="string">"start"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">constructor-arg</span> <span class="attr">index</span>=<span class="string">"0"</span> <span class="attr">value</span>=<span class="string">"***:2181"</span>&gt;</span><span class="tag">&lt;/<span class="name">constructor-arg</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">constructor-arg</span> <span class="attr">index</span>=<span class="string">"1"</span> <span class="attr">value</span>=<span class="string">"10000"</span>&gt;</span><span class="tag">&lt;/<span class="name">constructor-arg</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">constructor-arg</span> <span class="attr">index</span>=<span class="string">"2"</span> <span class="attr">value</span>=<span class="string">"10000"</span>&gt;</span><span class="tag">&lt;/<span class="name">constructor-arg</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">constructor-arg</span> <span class="attr">index</span>=<span class="string">"3"</span> <span class="attr">ref</span>=<span class="string">"retryPolicy"</span>&gt;</span><span class="tag">&lt;/<span class="name">constructor-arg</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">&lt;!-- 客户端配置 --&gt;</span></span><br><span class="line">	<span class="comment">&lt;!-- init-method="init" 不使用zk的话，仅仅只是测试为了方便可以把这个方法暂时拿掉 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"ZKCurator"</span> <span class="attr">class</span>=<span class="string">"com.brewing.web.utils.ZKCurator"</span> <span class="attr">init-method</span>=<span class="string">"init"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">constructor-arg</span> <span class="attr">index</span>=<span class="string">"0"</span> <span class="attr">ref</span>=<span class="string">"client"</span>&gt;</span><span class="tag">&lt;/<span class="name">constructor-arg</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h1 id="4-ZkClient配置"><a href="#4-ZkClient配置" class="headerlink" title="4.ZkClient配置"></a>4.ZkClient配置</h1><p> 这里使用的是curator，curator是对zookeeper的简单封装，提供了一些集成的方法，或者是提供了更优雅的api<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">import</span> org.apache.curator.framework.CuratorFramework;</span><br><span class="line"><span class="keyword">import</span> org.apache.zookeeper.CreateMode;</span><br><span class="line"><span class="keyword">import</span> org.apache.zookeeper.ZooDefs.Ids;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ZKCurator</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// zk客户端</span></span><br><span class="line">	<span class="keyword">private</span> CuratorFramework client = <span class="keyword">null</span>;	</span><br><span class="line">	<span class="keyword">final</span> <span class="keyword">static</span> Logger log = LoggerFactory.getLogger(ZKCurator.class);</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">ZKCurator</span><span class="params">(CuratorFramework client)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.client = client;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		client = client.usingNamespace(<span class="string">"admin"</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="comment">// 判断在admin命名空间下是否有bgm节点  /admin/bmg</span></span><br><span class="line">			<span class="keyword">if</span> (client.checkExists().forPath(<span class="string">"/bgm"</span>) == <span class="keyword">null</span>) &#123;</span><br><span class="line">				<span class="comment">/**</span></span><br><span class="line"><span class="comment">				 * 对于zk来讲，有两种类型的节点:</span></span><br><span class="line"><span class="comment">				 * 持久节点: 当你创建一个节点的时候，这个节点就永远存在，除非你手动删除</span></span><br><span class="line"><span class="comment">				 * 临时节点: 你创建一个节点之后，会话断开，会自动删除，当然也可以手动删除</span></span><br><span class="line"><span class="comment">				 */</span></span><br><span class="line">				client.create().creatingParentsIfNeeded()</span><br><span class="line">					.withMode(CreateMode.PERSISTENT)		<span class="comment">// 节点类型：持久节点</span></span><br><span class="line">					.withACL(Ids.OPEN_ACL_UNSAFE)			<span class="comment">// acl：匿名权限</span></span><br><span class="line">					.forPath(<span class="string">"/bgm"</span>);</span><br><span class="line">				log.info(<span class="string">"zookeeper初始化成功..."</span>);</span><br><span class="line">				log.info(<span class="string">"zookeeper服务器状态：&#123;&#125;"</span>, client.isStarted());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			log.error(<span class="string">"zookeeper客户端连接、初始化错误..."</span>);</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@Description</span>: 增加或者删除bgm，向zk-server创建子节点，供小程序后端监听</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendBgmOperator</span><span class="params">(String bgmId, String operObj)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			</span><br><span class="line">			client.create().creatingParentsIfNeeded()</span><br><span class="line">				.withMode(CreateMode.PERSISTENT)		<span class="comment">// 节点类型：持久节点</span></span><br><span class="line">				.withACL(Ids.OPEN_ACL_UNSAFE)			<span class="comment">// acl：匿名权限</span></span><br><span class="line">				.forPath(<span class="string">"/bgm/"</span> + bgmId, operObj.getBytes());</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123; </span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p> 这时候就可以使用zkCurator.sendBgmOperator()</p>
+<p> 进行节点创建</p>
+<p> 例如:</p>
+<h2 id="VideoController-java"><a href="#VideoController-java" class="headerlink" title="VideoController.java"></a>VideoController.java</h2> <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PostMapping</span>(<span class="string">"/addBgm"</span>)</span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> BrewingJSONResult <span class="title">addBgm</span><span class="params">(TpBgm bgm)</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	videoService.addBgm(bgm);</span><br><span class="line">	<span class="keyword">return</span> BrewingJSONResult.ok();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="VideoServiceImpl-java"><a href="#VideoServiceImpl-java" class="headerlink" title="VideoServiceImpl.java"></a>VideoServiceImpl.java</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addBgm</span><span class="params">(TpBgm bgm)</span> </span>&#123;</span><br><span class="line">		String bgmId = sid.nextShort();</span><br><span class="line">		bgm.setId(bgmId);</span><br><span class="line">		bgmMapper.insert(bgm);</span><br><span class="line">		</span><br><span class="line">		Map&lt;String, String&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">		map.put(<span class="string">"operType"</span>, BGMOperatorTypeEnum.ADD.type);</span><br><span class="line">		map.put(<span class="string">"path"</span>, bgm.getPath());</span><br><span class="line">		</span><br><span class="line">		zkCurator.sendBgmOperator(bgmId, JsonUtils.objectToJson(map));</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="ZKCurator-java"><a href="#ZKCurator-java" class="headerlink" title="ZKCurator.java"></a>ZKCurator.java</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.brewing.web.utils;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.curator.framework.CuratorFramework;</span><br><span class="line"><span class="keyword">import</span> org.apache.zookeeper.CreateMode;</span><br><span class="line"><span class="keyword">import</span> org.apache.zookeeper.ZooDefs.Ids;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ZKCurator</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// zk客户端</span></span><br><span class="line">	<span class="keyword">private</span> CuratorFramework client = <span class="keyword">null</span>;	</span><br><span class="line">	<span class="keyword">final</span> <span class="keyword">static</span> Logger log = LoggerFactory.getLogger(ZKCurator.class);</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">ZKCurator</span><span class="params">(CuratorFramework client)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.client = client;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		client = client.usingNamespace(<span class="string">"admin"</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="comment">// 判断在admin命名空间下是否有bgm节点  /admin/bmg</span></span><br><span class="line">			<span class="keyword">if</span> (client.checkExists().forPath(<span class="string">"/bgm"</span>) == <span class="keyword">null</span>) &#123;</span><br><span class="line">				<span class="comment">/**</span></span><br><span class="line"><span class="comment">				 * 对于zk来讲，有两种类型的节点:</span></span><br><span class="line"><span class="comment">				 * 持久节点: 当你创建一个节点的时候，这个节点就永远存在，除非你手动删除</span></span><br><span class="line"><span class="comment">				 * 临时节点: 你创建一个节点之后，会话断开，会自动删除，当然也可以手动删除</span></span><br><span class="line"><span class="comment">				 */</span></span><br><span class="line">				client.create().creatingParentsIfNeeded()</span><br><span class="line">					.withMode(CreateMode.PERSISTENT)		<span class="comment">// 节点类型：持久节点</span></span><br><span class="line">					.withACL(Ids.OPEN_ACL_UNSAFE)			<span class="comment">// acl：匿名权限</span></span><br><span class="line">					.forPath(<span class="string">"/bgm"</span>);</span><br><span class="line">				log.info(<span class="string">"zookeeper初始化成功..."</span>);</span><br><span class="line">				log.info(<span class="string">"zookeeper服务器状态：&#123;&#125;"</span>, client.isStarted());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			log.error(<span class="string">"zookeeper客户端连接、初始化错误..."</span>);</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@Description</span>: 增加或者删除bgm，向zk-server创建子节点，供小程序后端监听</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendBgmOperator</span><span class="params">(String bgmId, String operObj)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			</span><br><span class="line">			client.create().creatingParentsIfNeeded()</span><br><span class="line">				.withMode(CreateMode.PERSISTENT)		<span class="comment">// 节点类型：持久节点</span></span><br><span class="line">				.withACL(Ids.OPEN_ACL_UNSAFE)			<span class="comment">// acl：匿名权限</span></span><br><span class="line">				.forPath(<span class="string">"/bgm/"</span> + bgmId, operObj.getBytes());</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123; </span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="此时在服务器中，可以看到zookeeper创建了节点"><a href="#此时在服务器中，可以看到zookeeper创建了节点" class="headerlink" title="此时在服务器中，可以看到zookeeper创建了节点"></a>此时在服务器中，可以看到zookeeper创建了节点</h2><p><img src="/2019/04/19/java-zookeeper/节点树创建.png" alt="image"></p>
+<h2 id="此时另外一个端口-使用spring-boot-进行配置，可以监听到zookeeper-创建的子节点"><a href="#此时另外一个端口-使用spring-boot-进行配置，可以监听到zookeeper-创建的子节点" class="headerlink" title="此时另外一个端口(使用spring boot)进行配置，可以监听到zookeeper 创建的子节点."></a>此时另外一个端口(使用spring boot)进行配置，可以监听到zookeeper 创建的子节点.</h2><p>pom.xml与之前配置相同</p>
+<h1 id="创建ZKCuratorClient"><a href="#创建ZKCuratorClient" class="headerlink" title="创建ZKCuratorClient"></a>创建ZKCuratorClient</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.Brewing.springboot;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">import</span> java.net.URLEncoder;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.commons.io.FileUtils;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.lang3.StringUtils;</span><br><span class="line"><span class="keyword">import</span> org.apache.curator.RetryPolicy;</span><br><span class="line"><span class="keyword">import</span> org.apache.curator.framework.CuratorFramework;</span><br><span class="line"><span class="keyword">import</span> org.apache.curator.framework.CuratorFrameworkFactory;</span><br><span class="line"><span class="keyword">import</span> org.apache.curator.framework.recipes.cache.PathChildrenCache;</span><br><span class="line"><span class="keyword">import</span> org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;</span><br><span class="line"><span class="keyword">import</span> org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;</span><br><span class="line"><span class="keyword">import</span> org.apache.curator.retry.ExponentialBackoffRetry;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.Brewing.springboot.common.JsonUtils;</span><br><span class="line"><span class="keyword">import</span> com.Brewing.springboot.common.cofig.ResourceConfig;</span><br><span class="line"><span class="keyword">import</span> com.Brewing.springboot.common.enums.BGMOperatorTypeEnum;</span><br><span class="line"><span class="keyword">import</span> com.Brewing.springboot.service.TpBgm.BgmService;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ZKCuratorClient</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// zk客户端</span></span><br><span class="line">	<span class="keyword">private</span> CuratorFramework client = <span class="keyword">null</span>;	</span><br><span class="line">	<span class="keyword">final</span> <span class="keyword">static</span> Logger log = LoggerFactory.getLogger(ZKCuratorClient.class);</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span> BgmService bgmService;</span><br><span class="line">	</span><br><span class="line"><span class="comment">//	public static final String ZOOKEEPER_SERVER = "192.168.1.210:2181";</span></span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span> ResourceConfig resourceConfig;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">if</span> (client != <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 重试策略</span></span><br><span class="line">		RetryPolicy retryPolicy = <span class="keyword">new</span> ExponentialBackoffRetry(<span class="number">1000</span>, <span class="number">5</span>);</span><br><span class="line">		<span class="comment">// 创建zk客户端</span></span><br><span class="line">		client = CuratorFrameworkFactory.builder().connectString(resourceConfig.getZookeeperServer())</span><br><span class="line">				.sessionTimeoutMs(<span class="number">10000</span>).retryPolicy(retryPolicy).namespace(<span class="string">"admin"</span>).build();</span><br><span class="line">		<span class="comment">// 启动客户端</span></span><br><span class="line">		client.start();</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line"><span class="comment">//			String testNodeData = new String(client.getData().forPath("/bgm/190103A6941RN5S8"));</span></span><br><span class="line"><span class="comment">//			log.info("测试的节点数据为： &#123;&#125;", testNodeData);</span></span><br><span class="line">			addChildWatch(<span class="string">"/bgm"</span>);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addChildWatch</span><span class="params">(String nodePath)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">final</span> PathChildrenCache cache = <span class="keyword">new</span> PathChildrenCache(client, nodePath, <span class="keyword">true</span>);</span><br><span class="line">		cache.start();</span><br><span class="line">		cache.getListenable().addListener(<span class="keyword">new</span> PathChildrenCacheListener() &#123;</span><br><span class="line">			</span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">childEvent</span><span class="params">(CuratorFramework client, PathChildrenCacheEvent event)</span> </span></span><br><span class="line"><span class="function">					<span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">				</span><br><span class="line">				<span class="keyword">if</span> (event.getType().equals(PathChildrenCacheEvent.Type.CHILD_ADDED)) &#123;</span><br><span class="line">					log.info(<span class="string">"监听到事件 CHILD_ADDED"</span>);</span><br><span class="line">					</span><br><span class="line">					<span class="comment">//1.从数据库查询bgm对象，获取路径path</span></span><br><span class="line">					String path = event.getData().getPath();</span><br><span class="line">					String operatorTypeStr = <span class="keyword">new</span> String(event.getData().getData());</span><br><span class="line">					Map&lt;String, String&gt; map = JsonUtils.jsonToPojo(operatorTypeStr, Map.class);</span><br><span class="line">					String operatorType = map.get(<span class="string">"operType"</span>);</span><br><span class="line">					String songPath = map.get(<span class="string">"path"</span>);</span><br><span class="line">					</span><br><span class="line"><span class="comment">//					String arr[] = path.split("/");</span></span><br><span class="line"><span class="comment">//					String bgmId = arr[arr.length-1];</span></span><br><span class="line"><span class="comment">//					TpBgm bgm = bgmService.queryBgmById(bgmId);</span></span><br><span class="line"><span class="comment">//					if(bgm == null) &#123;</span></span><br><span class="line"><span class="comment">//						return;</span></span><br><span class="line"><span class="comment">//					&#125;</span></span><br><span class="line">					</span><br><span class="line">					<span class="comment">//1.1bgm所在的相对路径</span></span><br><span class="line"><span class="comment">//					String songPath = bgm.getPath();</span></span><br><span class="line">					<span class="comment">//2.定义保存到本地的bgm路径</span></span><br><span class="line">					String filePath = <span class="string">""</span> + songPath;</span><br><span class="line">					<span class="comment">//2.服务器</span></span><br><span class="line"><span class="comment">//					String filePath = "/usr/local/Brewing-videos-dev"+songPath;</span></span><br><span class="line">					<span class="comment">//3.定义下载的路径(播放url)</span></span><br><span class="line">					<span class="comment">//3本地</span></span><br><span class="line">					String arrPath[] = songPath.split(<span class="string">"\\\\"</span>);</span><br><span class="line">					<span class="comment">//3服务器</span></span><br><span class="line"><span class="comment">//					String arrPath[] = songPath.split("/");</span></span><br><span class="line">					String finalPath = <span class="string">""</span>;</span><br><span class="line">					<span class="comment">//3.1处理url的斜杠以及编码</span></span><br><span class="line">					<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;arrPath.length;i++) &#123;</span><br><span class="line">						<span class="keyword">if</span>(StringUtils.isNotBlank(arrPath[i])) &#123;</span><br><span class="line">							finalPath += <span class="string">"/"</span>;</span><br><span class="line">							finalPath += URLEncoder.encode(arrPath[i],<span class="string">"UTF-8"</span>);</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line">					String bgmUrl = <span class="string">""</span>+finalPath;</span><br><span class="line">					<span class="keyword">if</span>(operatorType.equals(BGMOperatorTypeEnum.ADD.type)) &#123;</span><br><span class="line">						URL url = <span class="keyword">new</span> URL(bgmUrl);</span><br><span class="line">						File file = <span class="keyword">new</span> File(filePath);</span><br><span class="line">						FileUtils.copyURLToFile(url, file);</span><br><span class="line">						client.delete().forPath(path);</span><br><span class="line">					&#125;<span class="keyword">else</span> <span class="keyword">if</span> (operatorType.equals(BGMOperatorTypeEnum.DELETE.type)) &#123;</span><br><span class="line">						File file = <span class="keyword">new</span> File(filePath);</span><br><span class="line">						FileUtils.forceDelete(file);</span><br><span class="line">						client.delete().forPath(path);</span><br><span class="line">					&#125;</span><br><span class="line">					</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/zookeeper/" rel="tag"># zookeeper</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/19/java-redis/" rel="next" title="redis在java中的运用">
+                <i class="fa fa-chevron-left"></i> redis在java中的运用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/19/java-ffmpeg/" rel="prev" title="ffmpeg的使用">
+                ffmpeg的使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+            <img class="site-author-image" itemprop="image" src="https://drivingschoolzp.oss-cn-shenzhen.aliyuncs.com/237102_large.png">
+              <p class="site-author-name" itemprop="name">zl</p>
+              <div class="site-description motion-element" itemprop="description">近几年的一些学习与生活记录</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">9</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-什么是zookeeper"><span class="nav-number">1.</span> <span class="nav-text">1.什么是zookeeper</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-pom-xml文件配置"><span class="nav-number">2.</span> <span class="nav-text">2.pom.xml文件配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-ssm中-使用xml进行zookeeper-配置"><span class="nav-number">3.</span> <span class="nav-text">3.ssm中 使用xml进行zookeeper 配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-ZkClient配置"><span class="nav-number">4.</span> <span class="nav-text">4.ZkClient配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#VideoController-java"><span class="nav-number">4.1.</span> <span class="nav-text">VideoController.java</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VideoServiceImpl-java"><span class="nav-number">4.2.</span> <span class="nav-text">VideoServiceImpl.java</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ZKCurator-java"><span class="nav-number">4.3.</span> <span class="nav-text">ZKCurator.java</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#此时在服务器中，可以看到zookeeper创建了节点"><span class="nav-number">4.4.</span> <span class="nav-text">此时在服务器中，可以看到zookeeper创建了节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#此时另外一个端口-使用spring-boot-进行配置，可以监听到zookeeper-创建的子节点"><span class="nav-number">4.5.</span> <span class="nav-text">此时另外一个端口(使用spring boot)进行配置，可以监听到zookeeper 创建的子节点.</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建ZKCuratorClient"><span class="nav-number">5.</span> <span class="nav-text">创建ZKCuratorClient</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zl</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.0.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.1"></script>
+
+  <script src="/js/src/motion.js?v=7.0.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=7.0.1"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=7.0.1"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.1"></script>
+<script src="/js/src/post-details.js?v=7.0.1"></script>
+
+
+
+  
+
+
+  <script src="/js/src/next-boot.js?v=7.0.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+   <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>
