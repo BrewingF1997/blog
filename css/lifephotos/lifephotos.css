@@ -3,12 +3,12 @@
     padding: 0;
 }
 #box{
-    column-width: 192px;/*将图片的宽度设置为多列的宽度*/
-    -webkit-column-width: 192px;/*浏览器的兼容性*/
-    -moz-column-width: 192px;/*浏览器的兼容性*/
+    column-width: 162px;/*将图片的宽度设置为多列的宽度*/
+    -webkit-column-width: 162px;/*浏览器的兼容性*/
+    -moz-column-width: 162px;/*浏览器的兼容性*/
 }
 .pic{
-    width: 192px;
+    width: 162px;
 }
 .pic img{/*给图片设置阴影  内边距*/
     padding: 8px;
