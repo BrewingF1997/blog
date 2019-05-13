@@ -1,0 +1,17 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+#box{
+    column-width: 192px;/*将图片的宽度设置为多列的宽度*/
+    -webkit-column-width: 192px;/*浏览器的兼容性*/
+    -moz-column-width: 192px;/*浏览器的兼容性*/
+}
+.pic{
+    width: 192px;
+}
+.pic img{/*给图片设置阴影  内边距*/
+    padding: 8px;
+    box-shadow: 0 0 15px gainsboro;
+    border-radius:4px;
+}
