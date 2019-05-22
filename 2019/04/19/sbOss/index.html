@@ -100,23 +100,23 @@
 <meta name="keywords" content="图片上传,阿里云,OSS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="spring boot oss配置">
-<meta property="og:url" content="http://yoursite.com/2019/04/19/sbOss/index.html">
+<meta property="og:url" content="http://yoursite.com/blog/2019/04/19/sbOss/index.html">
 <meta property="og:site_name" content="Brewing">
 <meta property="og:description" content="在进行网页设计的时候遇到一些图片上传的问题 (1) 图片存哪 (2) 图片大小以及数量 考虑到如果不想使用文件io 读写，可以使用阿里云的OSS进行图片上传保存  1.登陆阿里云oss(本人使用阿里云)进行开通oss操作，不仔细讲官网有教学。 并且获取必要参数写入 spring boot 配置文件 123456# 阿里云OSS配置aliyun.ak= ****aliyun.sk= ****aliy">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/2019/04/19/sbOss/oss.png">
+<meta property="og:image" content="http://yoursite.com/blog/2019/04/19/sbOss/oss.png">
 <meta property="og:updated_time" content="2019-04-19T05:54:18.415Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="spring boot oss配置">
 <meta name="twitter:description" content="在进行网页设计的时候遇到一些图片上传的问题 (1) 图片存哪 (2) 图片大小以及数量 考虑到如果不想使用文件io 读写，可以使用阿里云的OSS进行图片上传保存  1.登陆阿里云oss(本人使用阿里云)进行开通oss操作，不仔细讲官网有教学。 并且获取必要参数写入 spring boot 配置文件 123456# 阿里云OSS配置aliyun.ak= ****aliyun.sk= ****aliy">
-<meta name="twitter:image" content="http://yoursite.com/2019/04/19/sbOss/oss.png">
+<meta name="twitter:image" content="http://yoursite.com/blog/2019/04/19/sbOss/oss.png">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/04/19/sbOss/">
+  <link rel="canonical" href="http://yoursite.com/blog/2019/04/19/sbOss/">
 
 
 
@@ -365,7 +365,7 @@
   
 
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/19/sbOss/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2019/04/19/sbOss/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="zl">
@@ -486,7 +486,7 @@
 <p>剩下的就是 前后端交互</p>
 <p>前端进行文件传入，后台进行MultipartFile 进行写入<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> BrewingJSONResult <span class="title">updaeUserImgByOpenid</span><span class="params">(String openid, MultipartFile imgFile)</span> </span>&#123;</span><br><span class="line">        String imgUrl;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (imgFile != <span class="keyword">null</span>) &#123;</span><br><span class="line">                imgUrl = fileUploadService.upload(imgFile);</span><br><span class="line">                <span class="keyword">return</span> tpUserService.updateImgByOpenId(openid, imgUrl);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> BrewingJSONResult.errorMsg(<span class="string">"报错"</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
 <p>这时候文件就正常上传到阿里云上</p>
-<p><img src="/2019/04/19/sbOss/oss.png" alt="image"></p>
+<p><img src="/blog/2019/04/19/sbOss/oss.png" alt="image"></p>
 
       
     </div>
